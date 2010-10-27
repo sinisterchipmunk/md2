@@ -67,6 +67,8 @@ class MD2
     @texcoords = []
     read_data(file, texture_coord_offset, texture_coord_count, sizeof(:short)*2) do |chunk|
       @texcoords << chunk.unpack("s2")
+      @texcoords.last[0] = @texcoords.last[0] / skin_width.to_f
+      @texcoords.last[1] = @texcoords.last[1] / skin_height.to_f
     end
   end
   
