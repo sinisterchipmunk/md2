@@ -37,4 +37,30 @@ describe MD2 do
   it "should have correct base path" do
     subject.base_path.should == File.dirname(md2_file("pilot"))
   end
+  
+  context "commands" do
+    it "should not exceed 1.0 for T coordinates" do
+      subject.gl_commands.each do |command|
+        command.segments.each do |segment|
+          segment.texture_t.should be <= 1.0
+        end
+      end
+    end
+
+    it "should not exceed 1.0 for S coordinates" do
+      subject.gl_commands.each do |command|
+        command.segments.each do |segment|
+          segment.texture_s.should be <= 1.0
+        end
+      end
+    end
+
+    it "should not have nil vertex indices" do
+      subject.gl_commands.each do |command|
+        command.segments.each do |segment|
+          segment.vertex_index.should_not be_nil
+        end
+      end
+    end
+  end
 end

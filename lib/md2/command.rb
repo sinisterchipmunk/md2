@@ -56,7 +56,7 @@ class MD2::Command
     @type = args.shift
     @segments = []
     
-    1.step(args.length, 3) do |index|
+    0.step(args.length-1, 3) do |index|
       @segments << MD2::Command::Segment.new(args[index], args[index+1], args[index+2])
     end
   end

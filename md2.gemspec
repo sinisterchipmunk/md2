@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{md2}
-  s.version = "1.0.0.a"
+  s.version = "1.0.0.b"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Colin MacKenzie IV"]
