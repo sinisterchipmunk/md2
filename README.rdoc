@@ -74,6 +74,9 @@ with the nuances of the format. Instead, here's how you would go about rendering
     glEnd
   end
   
+== Limitations
+
+Modifying and saving the MD2 file is not currently supported, although this may be implemented sometime in the future.
 
 == Note on Patches/Pull Requests
  
