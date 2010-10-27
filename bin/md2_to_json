@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+def banner
+  puts "Usage:"
+  puts "\truby md2_to_json.rb path/to/input.md2"
+  puts
+end
+
+unless ARGV.length == 1
+  banner
+  puts "Output is printed to stdout. To capture json output, redirect"
+  puts "to file:"
+  puts
+  puts "\truby md2_to_json.rb path/to/input.md2 >path/to/output.md2"
+  puts
+  exit
+end
+
+if File.file?(filename = ARGV.first)
+  require 'rubygems'
+  gem 'json'
+  
+  require File.join(File.dirname(__FILE__), '../lib/md2')
+  require 'json'
+  md2 = MD2.new(filename)
+  puts md2.to_json
+else
+  puts
+  puts "!! File '#{filename}' does not exist !!"
+  puts
+  banner
+  exit
+end

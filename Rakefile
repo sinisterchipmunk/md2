@@ -5,11 +5,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "md2"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{A Ruby library for loading MD2 3D model files.}
+    gem.description = %Q{A Ruby library for loading MD2 3D model files.}
     gem.email = "sinisterchipmunk@gmail.com"
-    gem.homepage = "http://github.com/sinisterchipmunk/md2"
+    gem.homepage = "http://thoughtsincomputation.com"
     gem.authors = ["Colin MacKenzie IV"]
+    gem.add_dependency "sizes", ">= 1.0"
+    gem.add_dependency "activesupport", ">= 2.3.5"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

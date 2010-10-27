@@ -1,6 +1,79 @@
 = md2
 
-Description goes here.
+A Ruby library for loading MD2 3D model files. It doesn't actually render them; that part is up to you.
+
+While I'm presently in the final stages of testing this gem, I've not yet finished doing so; that's why it hasn't been
+released yet. It's probably usable, but I won't guarantee that until I actually render a model using data loaded with
+this library.
+
+== Installation
+
+  gem install md2
+  
+== Usage
+
+  require 'md2'
+  
+  md2 = MD2.new("/path/to/md2")
+  md2.frames.each_with_index do |frame, index|
+    puts frame.name
+    puts frame.vertices.length
+    puts frame.normal_indices
+  end
+  puts md2.triangles.length
+  puts md2.texcoords.length
+  # and so on.
+  
+See the MD2 class documentation for more, or scroll down for an example of how to render the model.
+
+== Other Cool Stuff
+
+The MD2 library works great with the 'json' gem. Just load an MD2 and then call #to_json:
+
+  require 'md2'
+  require 'json'
+  
+  md2 = MD2.new("/path/to/md2")
+  json = md2.to_json
+  
+I think this will be pretty cool as WebGL and friends begin to take off. I was so psyched about not having to add any
+code that I wrote a generator instead. You can convert an MD2 file into its JSON counterpart at the command line with:
+
+  $ md2_to_json /path/to/md2 >/path/to/json
+  
+The generator just prints the JSON to stdout (which made it easier for me to test), so you have to redirect the output
+into a file if you want to capture it.
+
+  The ">" in the command above is used to redirect stdout. Check Wikipedia for
+  Redirection (computing) for more details if you've never seen this before:
+  http://en.wikipedia.org/wiki/Redirection_(computing)
+
+== Note on Rendering
+
+The preferred way to render an MD2 file is to make use of its GL Commands, which produce an optimized approach to
+rendering by switching between triangle strips and triangle fans (as opposed to just rendering the entire model with
+only triangles). This library parses the command information into an intuitive structure so you don't have to deal
+with the nuances of the format. Instead, here's how you would go about rendering an MD2 using its GL commands:
+
+  frame = md2.frames[current_frame]
+  
+  md2.gl_commands.each do |command|
+    case command.type
+      when :triangle_strip then glBegin(GL_TRIANGLE_STRIP)
+      when :triangle_fan   then glBegin(GL_TRIANGLE_FAN)
+    end
+    
+    command.segments.each do |segment|
+      index = segment.vertex_index
+    
+      glTexCoord2f(segment.texture_s, segment.texture_t)
+      glNormal3f(frame.normals[index].x, frame.normals[index].y, frame.normals[index].z)
+      glVertex3f(frame.vertices[index].x, frame.vertices[index].y, frame.vertices[index].z)
+    end
+    
+    glEnd
+  end
+  
 
 == Note on Patches/Pull Requests
  
@@ -15,3 +88,5 @@ Description goes here.
 == Copyright
 
 Copyright (c) 2010 Colin MacKenzie IV. See LICENSE for details.
+
+http://thoughtsincomputation.com
