@@ -20,3 +20,7 @@ pkg
 
 ## PROJECT::SPECIFIC
 .idea
+*.bundle
+*.o
+*.out
+Makefile

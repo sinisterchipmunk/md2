@@ -3,7 +3,7 @@ class MD2::Header
   LENGTH = 68
   
   # The magic number that all MD2 headers start with. This is equal to "IDP2" in bytes.
-  MD2_IDENT = ((?2<<24) + (?P<<16) + (?D<<8) + ?I)
+  MD2_IDENT = ((?2.ord<<24) + (?P.ord<<16) + (?D.ord<<8) + ?I.ord) # we use #ord because of Ruby 1.9
   
   # The MD2 file format version. This is always 8.
   MD2_VERSION = 8

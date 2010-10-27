@@ -2,8 +2,17 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'rubygems'
 require 'md2'
-require 'spec'
-require 'spec/autorun'
+begin
+  # rspec 1.x
+  require 'spec'
+  require 'spec/autorun'
+  RSPEC_VERSION = 1
+rescue LoadError
+  # rspec 2.x
+  require 'rspec'
+  RSPEC_VERSION = 2
+end
+
 require 'json'
 
 module SpecHelpers
@@ -20,6 +29,12 @@ module SpecHelpers
   end
 end
 
-Spec::Runner.configure do |config|
-  config.include SpecHelpers
+if RSPEC_VERSION == 1
+  Spec::Runner.configure do |config|
+    config.include SpecHelpers
+  end
+else
+  RSpec.configure do |config|
+    config.include SpecHelpers
+  end
 end
