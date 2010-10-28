@@ -17,7 +17,9 @@ class MD2::Frame
   def reduce
     {        
       :name => name,
-      :vertices => vertices.flatten,
+      :translation => @translation,
+      :scale => @scale,
+      :vertices => packed_vertices,
       :normal_indices => normal_indices.flatten
     }
   end
@@ -41,6 +43,14 @@ class MD2::Frame
   end
   
   private
+  def packed_vertices
+    vertices.collect do |vert|
+      [ ((vert[0] - @translation[0]) / @scale[0]).to_i,
+        ((vert[1] - @translation[1]) / @scale[1]).to_i,
+        ((vert[2] - @translation[2]) / @scale[2]).to_i ]
+    end.flatten
+  end
+  
   def unpack_vertex_data(packed_vertex)
     3.times do |i|
       packed_vertex[i] = (packed_vertex[i] * @scale[i]) + @translation[i]
