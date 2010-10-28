@@ -19,7 +19,7 @@ class MD2::Frame
       :name => name,
       :vertices => vertices.flatten,
       :normal_indices => normal_indices.flatten
-    }.to_json
+    }
   end
   
   def initialize(frame_data)
