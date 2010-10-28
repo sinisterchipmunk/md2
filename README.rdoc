@@ -1,10 +1,6 @@
 = md2
 
-A Ruby library for loading MD2 3D model files. It doesn't actually render them; that part is up to you.
-
-While I'm presently in the final stages of testing this gem, I've not yet finished doing so; that's why it hasn't been
-released yet. It's probably usable, but I won't guarantee that until I actually render a model using data loaded with
-this library.
+A Ruby library for loading MD2 (Quake II) 3D model files. It doesn't actually render them; that part is up to you.
 
 == Installation
 
@@ -26,7 +22,7 @@ this library.
   
 See the MD2 class documentation for more, or scroll down for an example of how to render the model.
 
-== Other Cool Stuff
+== Converting to JSON
 
 The MD2 library works great with the 'json' gem. Just load an MD2 and then call #to_json:
 
@@ -36,8 +32,8 @@ The MD2 library works great with the 'json' gem. Just load an MD2 and then call 
   md2 = MD2.new("/path/to/md2")
   json = md2.to_json
   
-I think this will be pretty cool as WebGL and friends begin to take off. I was so psyched about not having to add any
-code that I wrote a generator instead. You can convert an MD2 file into its JSON counterpart at the command line with:
+I think this will be pretty cool as WebGL and friends begin to take off. I've also added a generator for this. You can
+convert an MD2 file into its JSON counterpart at the command line with:
 
   $ md2_to_json /path/to/md2 >/path/to/json
   
@@ -47,6 +43,89 @@ into a file if you want to capture it.
   The ">" in the command above is used to redirect stdout. Check Wikipedia for
   Redirection (computing) for more details if you've never seen this before:
   http://en.wikipedia.org/wiki/Redirection_(computing)
+  
+=== About the JSON output
+
+First, here's the general structure of a JSON string created by this library:
+
+  {
+    "header": {
+      "skin_width":256, "skin_height":256, "skin_count":0, "frame_count":199,
+      (other header data that was previously used for loading the model)
+    },
+    "frames": {[
+      {"name"          : "Frame1",
+       "translation"   :[ (XYZ float array) ],
+       "scale"         :[ (XYZ float array) ],
+       "vertices"      :[ (array of vertex data: these are INTEGERS! - see below) ],
+       "normal_indices":[array of normal indices]
+      },
+      ...
+    ]},
+    "triangles":[
+      {"vertex_indices"  :[ (XYZ int array) ],
+       "texcoord_indices":[ (ST int array) ]},
+      ...
+    ],
+    "texcoords":[
+      [ (ST float array) ],
+      [ (ST float array) ],
+      [ (ST float array) ],
+      ...
+    ],
+    "skins": [ (string array of filenames) ],
+    "gl_commands": [
+      { "texture_s": float,
+        "texture_t": float,
+        "vertex_index": int },
+      ...
+    ]
+  }
+    
+Now that you can see the general flow of the JSON, here's a bit more info:
+
+The header info is generally not useful to you and consists mostly of information that was read from the MD2 file when
+it was initially loaded.
+
+Frames are one potential gotcha: the vertex information stored in the frame is an integer between 0 and 255. This
+integer is useless on its own; you need to expand the vertex data from it by first multiplying by scale, and then
+adding translation. The vertex count is divisible by 3 because -- you guessed it -- every first vertex is X, every
+second is Y and every third is Z. The reason for all of this? Because when I tried to precalculate it all for you,
+the JSON result was 4 times bigger! A 250KB MD2 file resulted in over 4MB of JSON. By letting you do this on your
+end, I'm saving you a ton of bandwidth. If you go another step and gzip compress the current result, it actually ends
+up smaller than the original MD2 file!
+
+* Note that the vertex data is already unpacked for you if you're using just the Ruby library; the vertex information
+  is only packaged this way in JSON, to reduce bandwidth requirements.
+
+So here's a code snippet of how to extract the vertex information in JavaScript. Copy and paste to your heart's content!
+  /* assume we have a JSON object called 'model' */
+  for (var frame_index = 0; frame_index < model.frames.length; frame_index++)
+  {
+    var vertices = [];
+    var frame = model.frames[frame_index];
+    for (var vert_index = 0; vert_index < frame.vertices.length; vert_index += 3)
+      for (var k = 0; k < 3; k++)
+        vertices[vert_index+k] = (frame.vertices[vert_index+k] * frame.scale[k]) + frame.translation[k];
+    /* we have the unpacked vertex data; may as well just replace the now-useless packed data */
+    frame.vertices = vertices;
+  }
+  
+Nothing else in the JSON output is packed in this way. The texture coordinate indices point to the "texcoords"
+array, and the normal indices point to the precomputed MD2 normals. If you need to implement those in JavaScript,
+take a look at the MD2::Normals constant for the data.
+
+Triangles are made up of 3 vertices (each with an X, Y, Z coordinate) and 3 texture coordinates (each with an S, T
+coordinate); therefore, they consist of 3 vertex indices (which reference the frame vertices you just unpacked) and
+3 texture coordinate indices.
+
+The texcoords array consists of a number of nested arrays. Each nested array has 2 elements, the S and T value for
+that texture coordinate. The nesting is designed to make it easier for you to access via coordinate indices (see
+Triangles, above).
+
+Skins are simply a list of filenames (Strings) referenced within the MD2. Do what you will with them.
+
+The final component, gl_commands, is discussed below. The code is in Ruby, but the approach is the same.
 
 == Note on Rendering
 

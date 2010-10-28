@@ -12,6 +12,7 @@ class MD2
   autoload :Vertex,   "md2/vertex"
   autoload :Triangle, "md2/triangle"
   autoload :Command,  "md2/command"
+  autoload :Normals,  "md2/normals"
   
   attr_reader :header
   attr_reader :base_path, :frames, :triangles, :skins, :texcoords, :gl_commands
@@ -26,14 +27,8 @@ class MD2
   end
   
   def to_json
-#    texcoords = []
-#    triangles = @triangles.collect do |tri|
-#      3.times do |i|
-#        texcoords[tri.vertex_indices[i]*2  ] = (@texcoords[tri.texcoord_indices[i]][0] * skin_width).to_i
-#        texcoords[tri.vertex_indices[i]*2+1] = (@texcoords[tri.texcoord_indices[i]][1] * skin_height).to_i
-#      end
-#      [tri.vertex_indices[0], tri.vertex_indices[1], tri.vertex_indices[2]]
-#    end
+    raise "Can't convert to json unless you've already activated the 'json' gem!" if !defined?(JSON)
+    
     {
       :header => @header,
       :frames => @frames.collect { |f| f.reduce },

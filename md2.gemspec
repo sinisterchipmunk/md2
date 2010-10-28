@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{md2}
-  s.version = "1.0.0.b"
+  s.version = "1.0.0"
 
-  s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Colin MacKenzie IV"]
-  s.date = %q{2010-10-27}
+  s.date = %q{2010-10-28}
   s.default_executable = %q{md2_to_json}
   s.description = %q{A Ruby library for loading MD2 3D model files.}
   s.email = %q{sinisterchipmunk@gmail.com}
@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
      "lib/md2/errors.rb",
      "lib/md2/frame.rb",
      "lib/md2/header.rb",
+     "lib/md2/normals.rb",
      "lib/md2/triangle.rb",
      "lib/md2/vertex.rb",
      "md2.gemspec",
@@ -55,6 +56,7 @@ Gem::Specification.new do |s|
      "spec/support/ogro/Weapon.md2",
      "spec/support/ogro/Weapon.pcx",
      "spec/support/ogro/ogro.md2",
+     "spec/support/ogro/ogro.png",
      "spec/support/pilot/CC_attribution_licence.txt",
      "spec/support/pilot/GNU_licence.txt",
      "spec/support/pilot/Readme.txt",
@@ -84,7 +86,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://thoughtsincomputation.com}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{A Ruby library for loading MD2 3D model files.}
   s.test_files = [
     "spec/lib/md2/frame_spec.rb",
@@ -97,7 +99,7 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sizes>, [">= 1.0"])
       s.add_runtime_dependency(%q<activesupport>, [">= 2.3.5"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
