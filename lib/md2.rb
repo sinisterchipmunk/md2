@@ -26,19 +26,19 @@ class MD2
   end
   
   def to_json
-    texcoords = []
-    triangles = @triangles.collect do |tri|
-      3.times do |i|
-        texcoords[tri.vertex_indices[i]*2  ] = @texcoords[tri.texcoord_indices[i]][0]
-        texcoords[tri.vertex_indices[i]*2+1] = @texcoords[tri.texcoord_indices[i]][1]
-      end
-      [tri.vertex_indices[0], tri.vertex_indices[1], tri.vertex_indices[2]]
-    end
+#    texcoords = []
+#    triangles = @triangles.collect do |tri|
+#      3.times do |i|
+#        texcoords[tri.vertex_indices[i]*2  ] = (@texcoords[tri.texcoord_indices[i]][0] * skin_width).to_i
+#        texcoords[tri.vertex_indices[i]*2+1] = (@texcoords[tri.texcoord_indices[i]][1] * skin_height).to_i
+#      end
+#      [tri.vertex_indices[0], tri.vertex_indices[1], tri.vertex_indices[2]]
+#    end
     {
       :header => @header,
       :frames => @frames.collect { |f| f.reduce },
-      :triangles => triangles,
-      :texcoords => texcoords,
+      :triangles => @triangles,
+      :texcoords => @texcoords,
       :skins => @skins,
       :gl_commands => @gl_commands,
       :base_path => @base_path
@@ -87,8 +87,8 @@ class MD2
     @texcoords = []
     read_data(file, texture_coord_offset, texture_coord_count, sizeof(:short)*2) do |chunk|
       @texcoords << chunk.unpack("s2")
-#      @texcoords.last[0] = @texcoords.last[0] / skin_width.to_f
-#      @texcoords.last[1] = @texcoords.last[1] / skin_height.to_f
+      @texcoords.last[0] = @texcoords.last[0] / skin_width.to_f
+      @texcoords.last[1] = @texcoords.last[1] / skin_height.to_f
     end
   end
   
