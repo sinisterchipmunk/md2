@@ -35,7 +35,7 @@ class MD2
       [tri.vertex_indices[0], tri.vertex_indices[1], tri.vertex_indices[2]]
     end
     {
-      :header => @header.to_json,
+      :header => @header,
       :frames => @frames.collect { |f| f.reduce },
       :triangles => triangles,
       :texcoords => texcoords,
