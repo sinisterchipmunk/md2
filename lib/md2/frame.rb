@@ -14,6 +14,14 @@ class MD2::Frame
   # The indices of the normal vectors.
   attr_reader :normal_indices
   
+  def reduce
+    {        
+      :name => name,
+      :vertices => vertices.flatten,
+      :normal_indices => normal_indices.flatten
+    }.to_json
+  end
+  
   def initialize(frame_data)
     @scale = []
     @translation = []

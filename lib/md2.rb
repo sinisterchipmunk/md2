@@ -25,6 +25,26 @@ class MD2
     load(path)
   end
   
+  def to_json
+    texcoords = []
+    triangles = @triangles.collect do |tri|
+      3.times do |i|
+        texcoords[tri.vertex_indices[i]*2  ] = @texcoords[tri.texcoord_indices[i]][0]
+        texcoords[tri.vertex_indices[i]*2+1] = @texcoords[tri.texcoord_indices[i]][1]
+      end
+      [tri.vertex_indices[0], tri.vertex_indices[1], tri.vertex_indices[2]]
+    end
+    {
+      :header => @header.to_json,
+      :frames => @frames.collect { |f| f.reduce },
+      :triangles => triangles,
+      :texcoords => texcoords,
+      :skins => @skins,
+      :gl_commands => @gl_commands,
+      :base_path => @base_path
+    }.to_json
+  end
+  
   private
   def load(path)
     @base_path = File.dirname(path)
