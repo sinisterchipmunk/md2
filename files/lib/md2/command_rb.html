@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: command.rb</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>command.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>lib/md2/command.rb
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Wed Dec 15 08:52:31 -0500 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+This class is instantiated from the C extension. You shouldn&#8216;t have
+to instantiate it directly.
+</p>
+<p>
+GL Commands are an optimization technique employed by <a
+href="../../../classes/MD2.html">MD2</a> files to improve render time. The
+<a href="../../../classes/MD2.html">MD2</a> file contains a span of bytes
+equal to the MD2::Header#gl_command_count. Those bytes in turn have the
+following format:
+</p>
+<pre>
+  1. How many bytes follow for a single GL command. This is an integer, so the data need to be
+     cast into an integer in order to be processed.
+
+     This byte also indicates the render method for this GL command: if it's positive,
+     this is a triangle strip; if it's negative, a triangle fan. If zero, this byte
+     represents the end of the command list. Terminating bytes are silently omitted
+     by this Ruby library.
+  2. The horizontal texture coordinate. This is a float, so the data needs to be cast into a
+     float to be processed.
+  3. The vertical texture coordinate. This is a float, so the data needs to be cast into a
+     float to be processed.
+  4. The vertex index to be rendered. This is an integer, so the data needs to be cast into
+     an integer to be processed.
+</pre>
+<p>
+As the data are cast into the necessary types, the boundaries of any given
+command structure must be adjusted to match. I was not able to find a way
+to do this using pure Ruby, so the bulk of the above algorithm is
+implemented in this gem&#8216;s C extension.
+</p>
+<p>
+This class is only instantiated after the fact, with the data already
+deserialized.
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

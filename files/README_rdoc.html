@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: README.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>README.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>README.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Wed Dec 15 08:52:31 -0500 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>md2</h1>
+<p>
+A Ruby library for loading <a href="../classes/MD2.html">MD2</a> (Quake II)
+3D model files. It doesn&#8216;t actually render them; that part is up to
+you.
+</p>
+<h2>Installation</h2>
+<pre>
+  gem install md2
+</pre>
+<h2>Usage</h2>
+<pre>
+  require 'md2'
+
+  md2 = MD2.new(&quot;/path/to/md2&quot;)
+  md2.frames.each_with_index do |frame, index|
+    puts frame.name
+    puts frame.vertices.length
+    puts frame.normal_indices
+  end
+  puts md2.triangles.length
+  puts md2.texcoords.length
+  # and so on.
+</pre>
+<p>
+See the <a href="../classes/MD2.html">MD2</a> class documentation for more,
+or scroll down for an example of how to render the model.
+</p>
+<h2>Converting to JSON</h2>
+<p>
+The <a href="../classes/MD2.html">MD2</a> library works great with the
+&#8216;json&#8217; gem. Just load an <a href="../classes/MD2.html">MD2</a>
+and then call to_json:
+</p>
+<pre>
+  require 'md2'
+  require 'json'
+
+  md2 = MD2.new(&quot;/path/to/md2&quot;)
+  json = md2.to_json
+</pre>
+<p>
+I think this will be pretty cool as WebGL and friends begin to take off.
+I&#8216;ve also added a generator for this. You can convert an <a
+href="../classes/MD2.html">MD2</a> file into its JSON counterpart at the
+command line with:
+</p>
+<pre>
+  $ md2_to_json /path/to/md2 &gt;/path/to/json
+</pre>
+<p>
+The generator just prints the JSON to stdout (which made it easier for me
+to test), so you have to redirect the output into a file if you want to
+capture it.
+</p>
+<pre>
+  The &quot;&gt;&quot; in the command above is used to redirect stdout. Check Wikipedia for
+  Redirection (computing) for more details if you've never seen this before:
+  http://en.wikipedia.org/wiki/Redirection_(computing)
+</pre>
+<h3>About the JSON output</h3>
+<p>
+First, here&#8216;s the general structure of a JSON string created by this
+library:
+</p>
+<pre>
+  {
+    &quot;header&quot;: {
+      &quot;skin_width&quot;:256, &quot;skin_height&quot;:256, &quot;skin_count&quot;:0, &quot;frame_count&quot;:199,
+      (other header data that was previously used for loading the model)
+    },
+    &quot;frames&quot;: {[
+      {&quot;name&quot;          : &quot;Frame1&quot;,
+       &quot;translation&quot;   :[ (XYZ float array) ],
+       &quot;scale&quot;         :[ (XYZ float array) ],
+       &quot;vertices&quot;      :[ (array of vertex data: these are INTEGERS! - see below) ],
+       &quot;normal_indices&quot;:[array of normal indices]
+      },
+      ...
+    ]},
+    &quot;triangles&quot;:[
+      {&quot;vertex_indices&quot;  :[ (XYZ int array) ],
+       &quot;texcoord_indices&quot;:[ (ST int array) ]},
+      ...
+    ],
+    &quot;texcoords&quot;:[
+      [ (ST float array) ],
+      [ (ST float array) ],
+      [ (ST float array) ],
+      ...
+    ],
+    &quot;skins&quot;: [ (string array of filenames) ],
+    &quot;gl_commands&quot;: [
+      { &quot;texture_s&quot;: float,
+        &quot;texture_t&quot;: float,
+        &quot;vertex_index&quot;: int },
+      ...
+    ]
+  }
+</pre>
+<p>
+Now that you can see the general flow of the JSON, here&#8216;s a bit more
+info:
+</p>
+<p>
+The header info is generally not useful to you and consists mostly of
+information that was read from the <a href="../classes/MD2.html">MD2</a>
+file when it was initially loaded.
+</p>
+<p>
+Frames are one potential gotcha: the vertex information stored in the frame
+is an integer between 0 and 255. This integer is useless on its own; you
+need to expand the vertex data from it by first multiplying by scale, and
+then adding translation. The vertex count is divisible by 3 because &#8212;
+you guessed it &#8212; every first vertex is X, every second is Y and every
+third is Z. The reason for all of this? Because when I tried to
+precalculate it all for you, the JSON result was 4 times bigger! A 250KB <a
+href="../classes/MD2.html">MD2</a> file resulted in over 4MB of JSON. By
+letting you do this on your end, I&#8216;m saving you a ton of bandwidth.
+If you go another step and gzip compress the current result, it actually
+ends up smaller than the original <a href="../classes/MD2.html">MD2</a>
+file!
+</p>
+<ul>
+<li>Note that the vertex data is already unpacked for you if you&#8216;re using
+just the Ruby library; the vertex information is only packaged this way in
+JSON, to reduce bandwidth requirements.
+
+</li>
+</ul>
+<p>
+So here&#8216;s a code snippet of how to extract the vertex information in
+JavaScript. Copy and paste to your heart&#8216;s content!
+</p>
+<pre>
+  /* assume we have a JSON object called 'model' */
+  for (var frame_index = 0; frame_index &lt; model.frames.length; frame_index++)
+  {
+    var vertices = [];
+    var frame = model.frames[frame_index];
+    for (var vert_index = 0; vert_index &lt; frame.vertices.length; vert_index += 3)
+      for (var k = 0; k &lt; 3; k++)
+        vertices[vert_index+k] = (frame.vertices[vert_index+k] * frame.scale[k]) + frame.translation[k];
+    /* we have the unpacked vertex data; may as well just replace the now-useless packed data */
+    frame.vertices = vertices;
+  }
+</pre>
+<p>
+Nothing else in the JSON output is packed in this way. The texture
+coordinate indices point to the &quot;texcoords&quot; array, and the normal
+indices point to the precomputed <a href="../classes/MD2.html">MD2</a>
+normals. If you need to implement those in JavaScript, take a look at the
+<a href="../classes/MD2/Normals.html">MD2::Normals</a> constant for the
+data.
+</p>
+<p>
+Triangles are made up of 3 vertices (each with an X, Y, Z coordinate) and 3
+texture coordinates (each with an S, T coordinate); therefore, they consist
+of 3 vertex indices (which reference the frame vertices you just unpacked)
+and 3 texture coordinate indices.
+</p>
+<p>
+The texcoords array consists of a number of nested arrays. Each nested
+array has 2 elements, the S and T value for that texture coordinate. The
+nesting is designed to make it easier for you to access via coordinate
+indices (see Triangles, above).
+</p>
+<p>
+Skins are simply a list of filenames (Strings) referenced within the <a
+href="../classes/MD2.html">MD2</a>. Do what you will with them.
+</p>
+<p>
+The final component, gl_commands, is discussed below. The code is in Ruby,
+but the approach is the same.
+</p>
+<h2>Note on Rendering</h2>
+<p>
+The preferred way to render an <a href="../classes/MD2.html">MD2</a> file
+is to make use of its GL Commands, which produce an optimized approach to
+rendering by switching between triangle strips and triangle fans (as
+opposed to just rendering the entire model with only triangles). This
+library parses the command information into an intuitive structure so you
+don&#8216;t have to deal with the nuances of the format. Instead,
+here&#8216;s how you would go about rendering an <a
+href="../classes/MD2.html">MD2</a> using its GL commands:
+</p>
+<pre>
+  frame = md2.frames[current_frame]
+
+  md2.gl_commands.each do |command|
+    case command.type
+      when :triangle_strip then glBegin(GL_TRIANGLE_STRIP)
+      when :triangle_fan   then glBegin(GL_TRIANGLE_FAN)
+    end
+
+    command.segments.each do |segment|
+      index = segment.vertex_index
+
+      glTexCoord2f(segment.texture_s, segment.texture_t)
+      glNormal3f(frame.normals[index].x, frame.normals[index].y, frame.normals[index].z)
+      glVertex3f(frame.vertices[index].x, frame.vertices[index].y, frame.vertices[index].z)
+    end
+
+    glEnd
+  end
+</pre>
+<h2>Limitations</h2>
+<p>
+Modifying and saving the <a href="../classes/MD2.html">MD2</a> file is not
+currently supported, although this may be implemented sometime in the
+future.
+</p>
+<h2>Note on Patches/Pull Requests</h2>
+<ul>
+<li>Fork the project.
+
+</li>
+<li>Make your feature addition or bug fix.
+
+</li>
+<li>Add tests for it. This is important so I don&#8216;t break it in a future
+version unintentionally.
+
+</li>
+<li>Commit, do not mess with rakefile, version, or history. (if you want to
+have your own version, that is fine but bump version in a commit by itself
+I can ignore when I pull)
+
+</li>
+<li>Send me a pull request. Bonus points for topic branches.
+
+</li>
+</ul>
+<h2>Copyright</h2>
+<p>
+Copyright (c) 2010 Colin MacKenzie IV. See LICENSE for details.
+</p>
+<p>
+<a href="http://thoughtsincomputation.com">thoughtsincomputation.com</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
